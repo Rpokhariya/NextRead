@@ -1,0 +1,114 @@
+book_id,title,authors,average_rating,isbn,isbn13,language_code,num_pages,ratings_count,text_reviews_count,publication_date,publisher,goal
+1,Harry Potter and the Half-Blood Prince (Harry Potter  #6),J.K. Rowling/Mary GrandPré,4.57,439785960,9.78044E+12,eng,652,2095690,27591,9/16/2006,Scholastic Inc.,Explore Fantasy Worlds
+2,Harry Potter and the Order of the Phoenix (Harry Potter  #5),J.K. Rowling/Mary GrandPré,4.49,439358078,9.78044E+12,eng,870,2153167,29221,09-01-2004,Scholastic Inc.,Explore Fantasy Worlds
+4,Harry Potter and the Chamber of Secrets (Harry Potter  #2),J.K. Rowling,4.42,439554896,9.78044E+12,eng,352,6333,244,11-01-2003,Scholastic,Explore Fantasy Worlds
+5,Harry Potter and the Prisoner of Azkaban (Harry Potter  #3),J.K. Rowling/Mary GrandPré,4.56,043965548X,9.78044E+12,eng,435,2339585,36325,05-01-2004,Scholastic Inc.,Explore Fantasy Worlds
+8,Harry Potter Boxed Set  Books 1-5 (Harry Potter  #1-5),J.K. Rowling/Mary GrandPré,4.78,439682584,9.78044E+12,eng,2690,41428,164,9/13/2004,Scholastic,Explore Fantasy Worlds
+9,"Unauthorized Harry Potter Book Seven News: ""Half-Blood Prince"" Analysis and Speculation",W. Frederick Zimmerman,3.74,976540606,9.78098E+12,en-US,152,19,1,4/26/2005,Nimble Books,Explore Fantasy Worlds
+10,Harry Potter Collection (Harry Potter  #1-6),J.K. Rowling,4.73,439827604,9.78044E+12,eng,3342,28242,808,09-12-2005,Scholastic,Explore Fantasy Worlds
+12,The Ultimate Hitchhiker's Guide: Five Complete Novels and One Story (Hitchhiker's Guide to the Galaxy  #1-5),Douglas Adams,4.38,517226952,9.78052E+12,eng,815,3628,254,11-01-2005,Gramercy Books,Laugh with Sci-Fi Classics
+13,The Ultimate Hitchhiker's Guide to the Galaxy (Hitchhiker's Guide to the Galaxy  #1-5),Douglas Adams,4.38,345453743,9.78035E+12,eng,815,249558,4080,4/30/2002,Del Rey Books,Laugh with Sci-Fi Classics
+14,The Hitchhiker's Guide to the Galaxy (Hitchhiker's Guide to the Galaxy  #1),Douglas Adams,4.22,1400052920,9.7814E+12,eng,215,4930,460,08-03-2004,Crown,Laugh with Sci-Fi Classics
+16,The Hitchhiker's Guide to the Galaxy (Hitchhiker's Guide to the Galaxy  #1),Douglas Adams/Stephen Fry,4.22,739322206,9.78074E+12,eng,6,1266,253,3/23/2005,Random House Audio,Laugh with Sci-Fi Classics
+18,The Ultimate Hitchhiker's Guide (Hitchhiker's Guide to the Galaxy  #1-5),Douglas Adams,4.38,517149257,9.78052E+12,eng,815,2877,195,1/17/1996,Wings Books,Laugh with Sci-Fi Classics
+21,A Short History of Nearly Everything,Bill Bryson,4.21,076790818X,9.78077E+12,eng,544,248558,9396,9/14/2004,Broadway Books,Learn About the World
+22,Bill Bryson's African Diary,Bill Bryson,3.44,767915062,9.78077E+12,eng,55,7270,499,12-03-2002,Broadway Books,Learn About the World
+23,Bryson's Dictionary of Troublesome Words: A Writer's Guide to Getting It Right,Bill Bryson,3.87,767910435,9.78077E+12,eng,256,2088,131,9/14/2004,Broadway Books,Master the English Language
+24,In a Sunburned Country,Bill Bryson,4.07,767903862,9.78077E+12,eng,335,72451,4245,5/15/2001,Broadway Books,Learn About the World
+25,I'm a Stranger Here Myself: Notes on Returning to America After Twenty Years Away,Bill Bryson,3.9,076790382X,9.78077E+12,eng,304,49240,2211,6/28/2000,Broadway Books,Learn About the World
+26,The Lost Continent: Travels in Small Town America,Bill Bryson,3.83,60920084,9.78006E+12,eng,299,45712,2257,8/28/1990,William Morrow Paperbacks,Learn About the World
+27,Neither Here nor There: Travels in Europe,Bill Bryson,3.86,380713802,9.78038E+12,eng,254,48701,2238,3/28/1993,William Morrow Paperbacks,Learn About the World
+28,Notes from a Small Island,Bill Bryson,3.91,380727501,9.78038E+12,eng,324,80609,3301,5/28/1997,William Morrow Paperbacks,Learn About the World
+29,The Mother Tongue: English and How It Got That Way,Bill Bryson,3.93,380715430,9.78038E+12,eng,270,28489,2085,9/28/1991,William Morrow Paperbacks,Master the English Language
+30,J.R.R. Tolkien 4-Book Boxed Set: The Hobbit and The Lord of the Rings,J.R.R. Tolkien,4.59,345538374,9.78035E+12,eng,1728,101233,1550,9/25/2012,Ballantine Books,Explore Fantasy Worlds
+31,The Lord of the Rings (The Lord of the Rings  #1-3),J.R.R. Tolkien,4.5,618517650,9.78062E+12,eng,1184,1710,91,10/21/2004,Houghton Mifflin Harcourt,Explore Fantasy Worlds
+34,The Fellowship of the Ring (The Lord of the Rings  #1),J.R.R. Tolkien,4.36,618346252,9.78062E+12,eng,398,2128944,13670,09-05-2003,Houghton Mifflin Harcourt,Explore Fantasy Worlds
+35,The Lord of the Rings (The Lord of the Rings  #1-3),J.R.R. Tolkien/Alan  Lee,4.5,618260587,9.78062E+12,en-US,1216,1618,140,10-01-2002,Houghton Mifflin Harcourt,Explore Fantasy Worlds
+36,The Lord of the Rings: Weapons and Warfare,Chris   Smith/Christopher  Lee/Richard Taylor,4.53,618391002,9.78062E+12,eng,218,19822,46,11-05-2003,Houghton Mifflin Harcourt,Explore Fantasy Worlds
+37,The Lord of the Rings: Complete Visual Companion,Jude Fisher,4.5,618510826,9.78062E+12,eng,224,359,6,11/15/2004,Houghton Mifflin Harcourt,Explore Fantasy Worlds
+45,Agile Web Development with Rails: A Pragmatic Guide,Dave Thomas/David Heinemeier Hansson/Leon Breedt/Mike Clark/Thomas  Fuchs/Andreas  Schwarz,3.84,097669400X,9.78098E+12,eng,558,1430,59,7/28/2005,Pragmatic Bookshelf,Build Web Development Skills
+50,Hatchet (Brian's Saga  #1),Gary Paulsen,3.72,689840926,9.78069E+12,eng,208,270244,12017,04-01-2000,Atheneum Books for Young Readers: Richard Jackson Books,Read Young Adult Survival Stories
+51,"Hatchet: A Guide for Using ""Hatchet"" in the Classroom",Donna Ickes/Edward Sciranko/Keith Vasconcelles,4,1557344493,9.78156E+12,eng,48,36,2,8/28/1994,Teacher Created Resources,Master the English Language
+53,Guts: The True Stories behind Hatchet and the Brian Books,Gary Paulsen,3.88,385326505,9.78039E+12,eng,144,2067,334,1/23/2001,Delacorte Press,Read Young Adult Survival Stories
+54,Molly Hatchet - 5 of the Best,Molly Hatchet,4.33,1575606240,9.78158E+12,eng,56,6,0,06-10-2003,Cherry Lane Music Company,Engage with Pop Culture
+55,Hatchet Jobs: Writings on Contemporary Fiction,Dale Peck,3.45,1595580271,9.7816E+12,en-US,228,99,16,11-01-2005,The New Press,Read Foundational Essays
+57,A Changeling for All Seasons (Changeling Seasons #1),Angela Knight/Sahara Kelly/Judy Mays/Marteeka Karland/Kate Douglas/Shelby Morgen/Lacey Savage/Kate Hill/Willa Okati,3.76,1595962808,9.7816E+12,eng,304,167,4,11-01-2005,Changeling Press,Explore Fantasy Worlds
+58,Changeling (Changeling  #1),Delia Sherman,3.6,670059676,9.78067E+12,eng,256,978,111,8/17/2006,Viking Juvenile,Explore Fantasy Worlds
+59,The Changeling Sea,Patricia A. McKillip,4.06,141312629,9.78014E+12,eng,137,4454,302,4/14/2003,Firebird,Explore Fantasy Worlds
+61,The Changeling,Zilpha Keatley Snyder,4.17,595321801,9.7806E+12,eng,228,1176,96,06-08-2004,iUniverse,Explore Fantasy Worlds
+63,The Changeling,Kate Horsley,3.55,1590301943,9.78159E+12,eng,339,301,43,04-12-2005,Shambhala,Explore Fantasy Worlds
+66,The Changeling (Daughters of England  #15),Philippa Carr,3.98,449146979,9.78045E+12,eng,369,345,12,8/28/1990,Ivy Books,Explore Fantasy Worlds
+67,The Known World,Edward P. Jones,3.83,61159174,9.78006E+12,eng,388,29686,2626,8/29/2006,Amistad,Dive into Historical Fiction
+68,The Known World,Edward P. Jones/Kevin R. Free,3.83,006076273X,9.78006E+12,en-US,14,55,12,6/15/2004,HarperAudio,Dive into Historical Fiction
+69,The Known World,Edward P. Jones,3.83,60749911,9.78006E+12,eng,576,22,3,6/15/2004,Harper,Dive into Historical Fiction
+71,Traders  Guns & Money: Knowns and Unknowns in the Dazzling World of Derivatives,Satyajit Das,3.83,273704745,9.78027E+12,eng,334,1456,82,5/15/2006,FT Press,Understand Modern Economics
+72,Artesia: Adventures in the Known World,Mark Smylie,4.13,1932386106,9.78193E+12,eng,352,52,4,12/14/2005,Archaia,Explore Fantasy Worlds
+74,The John McPhee Reader (John McPhee Reader  #1),John McPhee/William Howarth,4.42,374517193,9.78037E+12,eng,416,562,37,06-01-1982,Farrar  Straus and Giroux,Learn About the World
+75,Uncommon Carriers,John McPhee,3.95,374280398,9.78037E+12,en-US,248,1630,203,5/16/2006,Farrar Straus Giroux,Learn About the World
+76,Heirs of General Practice,John McPhee,4.17,374519749,9.78037E+12,eng,128,268,22,04-01-1986,Farrar  Straus and Giroux,Learn About the World
+77,The Control of Nature,John McPhee,4.24,374522596,9.78037E+12,en-US,288,3498,305,09-01-1990,Farrar  Straus and Giroux,Learn About the World
+78,Annals of the Former World,John McPhee,4.34,374518734,9.78037E+12,eng,720,3115,228,01-06-1999,Farrar  Straus and Giroux,Learn About the World
+79,Coming Into the Country,John McPhee,4.22,374522871,9.78037E+12,eng,448,5704,261,04-01-1991,Farrar  Straus and Giroux,Learn About the World
+80,On Bullshit,Harry G. Frankfurt,3.57,691122946,9.78069E+12,eng,67,9358,995,1/30/2005,Princeton University Press,Improve Critical Thinking
+81,Another Bullshit Night in Suck City,Nick Flynn,3.78,393329402,9.78039E+12,eng,347,9318,907,09-12-2005,W. W. Norton & Company,Explore Contemporary Fiction
+82,Lincoln at Gettysburg: The Words That Remade America,Garry Wills,4.14,671867423,9.78067E+12,en-US,317,120,15,06-12-1993,Simon & Schuster,Analyze Social & Historical Trends
+83,The Gettysburg Address,Abraham Lincoln/Michael McCurdy,4.53,395883970,9.7804E+12,eng,32,5239,76,02-02-1998,HMH Books for Young Readers,Analyze Social & Historical Trends
+84,Underworld,Don DeLillo,3.92,684848155,9.78068E+12,eng,827,1505,175,07-09-1998,Scribner,Understand Postmodern Literature
+85,Libra,Don DeLillo,3.99,140156046,9.78014E+12,eng,480,11857,564,05-01-1991,Penguin,Understand Postmodern Literature
+86,Americana,Don DeLillo,3.43,140119485,9.78014E+12,eng,377,393,55,07-06-1989,Penguin Books,Understand Postmodern Literature
+87,Running Dog,Don DeLillo,3.43,679722947,9.78068E+12,eng,256,1356,72,7/17/1989,Vintage Contemporaries,Understand Postmodern Literature
+88,Cosmopolis,Don DeLillo,3.22,743244257,9.78074E+12,eng,224,460,41,04-06-2004,Scribner,Understand Postmodern Literature
+89,Great Jones Street,Don DeLillo,3.48,140179178,9.78014E+12,eng,272,2492,145,01-01-1994,Penguin Books,Understand Postmodern Literature
+90,The Names,Don DeLillo,3.64,679722955,9.78068E+12,eng,339,3100,212,7/17/1989,Vintage,Understand Postmodern Literature
+91,Against the Day,Thomas Pynchon,4.13,159420120X,9.78159E+12,eng,1085,5296,587,11/21/2006,Penguin Press,Understand Postmodern Literature
+92,V.,Thomas Pynchon,3.96,60930217,9.78006E+12,eng,547,1415,177,07-05-2005,Harper Perennial Modern Classics,Understand Postmodern Literature
+93,The Crying of Lot 49,Thomas Pynchon,3.69,60931671,9.78006E+12,eng,152,2161,230,04-01-1999,Harper Perennial,Understand Postmodern Literature
+94,Gravity's Rainbow,Thomas Pynchon,4.01,140283382,9.78014E+12,eng,784,762,213,01-01-2000,Penguin Books,Understand Postmodern Literature
+95,Mason & Dixon,Thomas Pynchon/Christophe Claro/Brice Matthieussent,4.07,312423209,9.78031E+12,eng,773,8086,602,01-03-2004,Picador USA,Understand Postmodern Literature
+96,Vineland,Thomas Pynchon,3.69,141180633,9.78014E+12,en-US,385,702,69,09-01-1997,Penguin Classics,Understand Postmodern Literature
+97,Gravity's Rainbow,Thomas Pynchon,4.01,143039946,9.78014E+12,eng,776,29764,2164,10/31/2006,Penguin Books,Understand Postmodern Literature
+98,Slow Learner: Early Stories,Thomas Pynchon,3.5,316724432,9.78032E+12,eng,193,334,34,4/30/1985,Back Bay Books,Understand Postmodern Literature
+99,Been Down So Long It Looks Like Up To Me,Richard Fariña/Thomas Pynchon,3.8,140189300,9.78014E+12,eng,352,2473,220,8/29/1996,Penguin Classics,Explore Contemporary Fiction
+100,The Year of Magical Thinking,Joan Didion,3.89,140004314X,9.7814E+12,en-US,227,2656,336,10-04-2005,Knopf Publishing Group,Read Foundational Essays
+101,The White Album,Joan Didion,4.17,374522219,9.78037E+12,eng,222,11889,738,10-01-1990,Farrar Straus Giroux,Read Foundational Essays
+102,A Book of Common Prayer,Joan Didion,3.8,679754865,9.78068E+12,eng,272,2962,255,04-11-1995,Vintage International,Read Foundational Essays
+103,Where I Was From,Joan Didion,3.86,679752862,9.78068E+12,eng,240,2842,292,9/14/2004,Vintage,Read Foundational Essays
+104,Slouching Towards Bethlehem,Joan Didion,4.21,374521727,9.78037E+12,eng,238,26934,1825,10-01-1990,Farrar Straus Giroux,Read Foundational Essays
+105,Democracy,Joan Didion,3.81,679754857,9.78068E+12,en-US,234,2070,169,4/25/1995,Vintage International,Read Foundational Essays
+106,We Tell Ourselves Stories in Order to Live: Collected Nonfiction,Joan Didion/John Leonard,4.5,307264874,9.78031E+12,eng,1122,1564,108,10/17/2006,Everyman's Library,Read Foundational Essays
+107,Play It As It Lays,Joan Didion/David Thomson,3.87,374529949,9.78037E+12,eng,231,23656,1706,11/15/2005,Farrar  Straus and Giroux,Explore Contemporary Fiction
+108,The New York Trilogy,Paul Auster/Art Spiegelman/Luc Sante,3.89,143039830,9.78014E+12,eng,308,43200,1873,3/28/2006,Penguin Classics,Explore Contemporary Fiction
+109,City of Glass (The New York Trilogy  #1),Paul Auster,3.79,140097317,9.78014E+12,eng,203,12410,734,04-07-1987,Penguin Books,Explore Contemporary Fiction
+110,Ghosts (The New York Trilogy  #2),Paul Auster,3.64,014009735X,9.78014E+12,eng,96,3672,195,07-07-1987,Penguin Books,Explore Contemporary Fiction
+111,The Locked Room (The New York Trilogy  #3),Paul Auster,3.89,940650762,9.78094E+12,eng,179,2998,164,11-01-1986,Sun and Moon Press,Explore Contemporary Fiction
+112,Pyramids of Montauk: Explorations in Consciousness,Peter Moon/Preston B. Nichols/Nina Helms,3.89,963188925,9.78096E+12,eng,256,74,2,01-01-1995,Sky Books (NY),Improve Critical Thinking
+113,The Brooklyn Follies,Paul Auster,3.84,312426232,9.78031E+12,eng,306,17977,1157,10/17/2006,Picador,Explore Contemporary Fiction
+114,Moon Palace,Paul Auster,3.94,140115854,9.78014E+12,eng,320,16099,503,04-01-1990,Penguin Books,Explore Contemporary Fiction
+115,The Music of Chance,Paul Auster,3.9,140154078,9.78014E+12,en-US,217,361,36,12-01-1991,Penguin Books,Explore Contemporary Fiction
+116,Travels in the Scriptorium,Paul Auster,3.23,805081453,9.78081E+12,eng,145,6688,562,1/23/2007,Henry Holt & Company,Explore Contemporary Fiction
+117,Leviathan,Paul Auster,3.96,140178139,9.78014E+12,eng,275,11744,443,09-01-1993,Penguin Books,Explore Contemporary Fiction
+118,The Red Notebook: True Stories,Paul Auster,3.77,811214982,9.78081E+12,eng,104,2390,120,6/17/2002,New Directions,Explore Contemporary Fiction
+119,Timbuktu / Leviathan / Moon Palace,Paul Auster,4.38,2742741461,9.78274E+12,fre,1075,21,1,11-07-2002,Actes Sud,Explore Contemporary Fiction
+120,Collapse: How Societies Choose to Fail or Succeed,Jared Diamond,3.93,143036556,9.78014E+12,eng,608,52522,2780,12/27/2005,Penguin Books Ltd. (London),Analyze Social & Historical Trends
+121,The Coming Economic Collapse: How You Can Thrive When Oil Costs $200 a Barrel,Stephen Leeb/Glen C. Strathy,3.4,446579785,9.78045E+12,en-US,211,213,26,02-01-2006,Business Plus,Understand Modern Economics
+122,Collapse of Complex Societies,Joseph A. Tainter,4.15,052138673X,9.78052E+12,eng,262,719,86,3/29/1990,Cambridge University Press,Analyze Social & Historical Trends
+123,Bowling Alone: The Collapse and Revival of American Community,Robert D. Putnam,3.8,743203046,9.78074E+12,eng,544,4762,512,08-07-2001,Simon  Schuster,Analyze Social & Historical Trends
+124,The Collapse of the Common Good: How America's Lawsuit Culture Undermines Our Freedom,Philip K. Howard,3.91,034543871X,9.78035E+12,eng,272,62,4,1/29/2002,Ballantine Books,Analyze Social & Historical Trends
+125,Reinventing the Enemy's Language: Contemporary Native Women's Writings of North America,Joy Harjo/Gloria Bird/Beth Cuthand/Valerie Martinez/Patricia Blanco,4.39,393318281,9.78039E+12,eng,576,278,20,9/17/1998,W. W. Norton  Company,Read Foundational Essays
+126,My Inventions,Nikola Tesla,4.01,1599869942,9.7816E+12,eng,88,2862,262,5/17/2006,Filiquarian Publishing  LLC.,Learn from Scientific Minds
+127,Wizard: The Life and Times of Nikola Tesla: Biography of a Genius,Marc J.  Seifer/William H. Terbo,3.78,806519606,9.78081E+12,eng,542,2829,334,02-01-2001,Citadel,Learn from Scientific Minds
+128,Nikola Tesla: A Spark of Genius,Carol Dommermuth-Costa,3.93,822549204,9.78082E+12,eng,144,105,5,10-01-1994,Lerner Publications,Learn from Scientific Minds
+129,Tesla Papers,Nikola Tesla/David Hatcher Childress,4.13,932813860,9.78093E+12,eng,100,102,2,12-01-2000,Adventures Unlimited Press,Learn from Scientific Minds
+130,Boys of Summer,Julie Elizabeth Leto/Leslie Kelly/Kimberly Raye,3.77,373792689,9.78037E+12,eng,249,478,12,6/27/2006,Harlequin Blaze,Read Classic 20th-Century Novels
+131,Programming Ruby: The Pragmatic Programmers' Guide,Dave Thomas/Chad Fowler/Andy Hunt,4.03,974514055,9.78097E+12,en-US,828,1577,49,10-11-2004,Pragmatic Bookshelf,Build Web Development Skills
+132,Golding's Lord of the Flies (Cliffs Notes),Maureen Kelly/CliffsNotes/William Golding,3.95,764585975,9.78076E+12,eng,112,73,8,6/13/2000,Cliffs Notes,Read Classic 20th-Century Novels
+133,Lord of the Flies,William Golding,3.68,307281701,9.78031E+12,eng,6,408,96,10-11-2005,Listening Library (Audio),Read Classic 20th-Century Novels
+134,A War Like No Other: How the Athenians & Spartans Fought the Peloponnesian War,Victor Davis Hanson,4.11,812969707,9.78081E+12,eng,397,1693,100,09-12-2006,Random House,Analyze Social & Historical Trends
+135,We Were Not Like Other People,Ephraim Sevela/Antonina W. Bouis,4.14,60255080,9.78006E+12,eng,216,1,0,01-01-1989,HarperCollins Publishers,Dive into Historical Fiction
+136,The Lovely Bones,Alice Sebold,3.81,330485385,9.78033E+12,en-GB,328,6485,966,06-01-2003,Picador,Explore Contemporary Fiction
+137,The Lovely Bones,Alice Sebold,3.81,159413023X,9.78159E+12,en-US,532,367,73,04-01-2004,Large Print Press,Explore Contemporary Fiction
+138,Lovely in Her Bones (Elizabeth MacPherson  #2),Sharyn McCrumb,3.8,345360354,9.78035E+12,eng,224,1371,43,5/13/1990,Ballantine Books,Explore Contemporary Fiction
+139,The Zen of CSS Design: Visual Enlightenment for the Web,Dave Shea/Molly E. Holzschlag,3.98,321303474,7.85342E+11,en-US,296,793,28,2/17/2005,Peachpit Press,Build Web Development Skills
+140,HTML  XHTML  and CSS (Visual Quickstart Guide),Elizabeth Castro,3.8,321430840,9.78032E+12,en-US,456,549,42,08-01-2006,Peachpit Press,Build Web Development Skills
+141,1000 Record Covers,Michael Ochs/Patrick Javault/Ulrike Wasel,3.85,3822840858,9.78382E+12,mul,575,288,31,5/15/2005,Taschen,Engage with Pop Culture
+142,Killing Yourself to Live: 85% of a True Story,Chuck Klosterman,3.81,743264460,9.78074E+12,eng,245,26381,1109,6/13/2006,Scribner,Engage with Pop Culture
