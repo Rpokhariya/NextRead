@@ -152,3 +152,66 @@ def search_books(db: Session, query: str):
         .all()
     )
     return search_results
+
+
+def get_book_by_id(db: Session, book_id: int):
+    """
+    Reads the database to find a book by its ID.
+    """
+    return db.query(models.Book).filter(models.Book.id == book_id).first()
+
+
+def update_book_description(db: Session, book_id: int, description: str):
+    """
+    Updates the description for a specific book.
+    """
+    db_book = db.query(models.Book).filter(models.Book.id == book_id).first()
+    if db_book:
+        db_book.description = description
+        db.commit()
+        db.refresh(db_book)
+    return db_book
+
+
+
+def rate_book(db: Session, user_id: int, book_id: int, rating: float):
+    """
+    Allows a user to rate a book. If the rating already exists, it's updated.
+    After rating, it recalculates and updates the book's average rating and count.
+    """
+    # Find if a rating by this user for this book already exists
+    existing_rating = db.query(models.Rating).filter(
+        models.Rating.user_id == user_id,
+        models.Rating.book_id == book_id
+    ).first()
+
+    if existing_rating:
+        # If it exists, update the rating
+        existing_rating.rating = rating
+    else:
+        # If not, create a new rating
+        new_rating = models.Rating(user_id=user_id, book_id=book_id, rating=rating)
+        db.add(new_rating)
+    
+    db.commit()
+
+    # --- RECALCULATION LOGIC ---
+    # After saving the rating, recalculate the book's stats
+    
+    # 1. Get the new average rating and total count
+    stats = db.query(
+        func.avg(models.Rating.rating).label("average"),
+        func.count(models.Rating.id).label("count")
+    ).filter(models.Rating.book_id == book_id).one()
+
+    # 2. Find the book to update
+    book_to_update = db.query(models.Book).filter(models.Book.id == book_id).first()
+    
+    # 3. Update the book's stats
+    if book_to_update and stats:
+        book_to_update.average_rating = round(stats.average, 2) if stats.average else 0
+        book_to_update.ratings_count = stats.count if stats.count else 0
+        db.commit()
+        db.refresh(book_to_update)
+        
+    return book_to_update

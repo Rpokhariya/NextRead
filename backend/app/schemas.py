@@ -20,6 +20,10 @@ class Goal(BaseModel):
     id: int
     name: str
 
+# --- Ratings Schema ---
+class RatingCreate(BaseModel):
+    rating: float = Field(..., ge=1, le=5) # Rating must be between 1 and 5
+
 # --- User Schemas ---
 
 # This is the "form" for creating a new user.

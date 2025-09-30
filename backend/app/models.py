@@ -1,5 +1,5 @@
 # app/models.py
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Float, CheckConstraint, UniqueConstraint
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -47,3 +47,16 @@ class UserActiveGoal(Base):
     # Relationships back to User and Goal
     user = relationship("User", back_populates="active_goal")
     goal = relationship("Goal")
+
+
+class Rating(Base):
+    __tablename__ = "ratings"
+    id = Column(Integer, primary_key=True)
+    book_id = Column(Integer, ForeignKey("books.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    rating = Column(Float, nullable=False)
+
+    __table_args__ = (
+        CheckConstraint('rating >= 1 AND rating <= 5', name='rating_check'),
+        UniqueConstraint('book_id', 'user_id', name='_book_user_uc'),
+    )

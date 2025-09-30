@@ -9,6 +9,7 @@ from typing import List
 # --- Local Imports ---
 from . import models, schemas, crud, auth
 from .database import engine, get_db
+from . import ai
 
 
 # --- Database Table Creation ---
@@ -132,3 +133,65 @@ def get_recommendations(
     """
     books = crud.get_recommendations_for_user(db, user_id=current_user.id)
     return books
+
+
+
+@app.get("/books/{book_id}", response_model=schemas.Book)
+def read_book_details(book_id: int, db: Session = Depends(get_db)):
+    """
+    This endpoint gets the details for a single book.
+    If the book's description is missing, it generates a new one
+    using an AI model and saves ONLY successful results.
+    """
+    db_book = crud.get_book_by_id(db, book_id=book_id)
+    if not db_book:
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    # We only need to check for the initial placeholder now.
+    needs_summary = db_book.description == "No description available."
+
+    if needs_summary:
+        print(f"Generating new summary for '{db_book.title}'...")
+        new_description = ai.generate_book_summary(title=db_book.title, author=db_book.author)
+        
+        is_successful_summary = new_description and new_description not in [
+            "AI model is not available.",
+            "Could not generate a summary at this time."
+        ]
+
+        if is_successful_summary:
+            # If the AI call was successful, update the database.
+            # The crud function will return the updated object.
+            db_book = crud.update_book_description(db, book_id=book_id, description=new_description)
+        else:
+            # 1. Detach the book object from the database session.
+            db.expunge(db_book)
+            
+            # 2. Now, we can safely change the description for this one response.
+            # This change will NOT be saved to the database.
+            db_book.description = new_description
+
+    return db_book
+
+
+
+# --- ADD THIS NEW ENDPOINT ---
+@app.post("/books/{book_id}/rate", response_model=schemas.Book)
+def rate_a_book(
+    book_id: int,
+    rating: schemas.RatingCreate,
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    This is a protected endpoint that allows a logged-in user to
+    rate a book from 1 to 5.
+    """
+    # First, check if the book exists
+    db_book = crud.get_book_by_id(db, book_id=book_id)
+    if not db_book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    # Call the CRUD function to save the rating and get the updated book back
+    updated_book = crud.rate_book(db=db, user_id=current_user.id, book_id=book_id, rating=rating.rating)
+    return updated_book
