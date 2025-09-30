@@ -53,14 +53,14 @@ To get a local copy up and running, follow these simple steps.
 4.  **Create a `.env` file** in the root directory and add the necessary environment variables:
     ```env
     # Example .env file
-    DATABASE_URL="your_mongodb_or_postgresql_connection_string"
+    DATABASE_URL="your_postgresql_connection_string"
     JWT_SECRET="your_strong_and_secret_key_for_jwt"
     GEMINI_API_KEY="your_google_gemini_api_key"
     ```
 
 5.  **Run the Development Server:**
     ```bash
-    npm run dev  # Or your custom script to start the server
+    npm run dev  
     ```
     The application should now be available at `http://localhost:3000` (or your configured port).
 
