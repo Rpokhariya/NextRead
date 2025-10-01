@@ -1,119 +1,54 @@
 import React, { useState } from 'react';
+import BookDetailModal from './BookDetailModal'; 
 
-const BookCard = ({ book, size = 'normal' }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+// --- Helper Icons ---
+const StarIcon = () => (
+    <svg className="w-4 h-4 text-golden mr-1" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.955a1 1 0 00.95.69h4.162c.969 0 1.371 1.24.588 1.81l-3.366 2.446a1 1 0 00-.364 1.118l1.287 3.955c.3.921-.755 1.688-1.54 1.118l-3.366-2.446a1 1 0 00-1.175 0l-3.366 2.446c-.784.57-1.838-.197-1.54-1.118l1.287-3.955a1 1 0 00-.364-1.118L2.08 9.382c-.783-.57-.38-1.81.588-1.81h4.162a1 1 0 00.95-.69L9.049 2.927z" />
+    </svg>
+);
 
-  return (
-    <>
-      <div
-        className={`bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer ${
-          size === 'large' ? 'h-auto' : 'h-80'
-        }`}
-        onClick={() => setIsExpanded(true)}
-      >
-        <div className={size === 'large' ? 'h-80' : 'h-48'}>
-          <img
-            src={book.cover_image_url || book.cover || 'https://via.placeholder.com/300x400?text=No+Cover'}
-            alt={book.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="p-4">
-          <h3 className="font-serif text-lg font-bold text-gray-800 dark:text-white line-clamp-2 mb-1">
-            {book.title}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{book.author || 'Unknown Author'}</p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <span className="text-yellow-500">★</span>
-              <span className="ml-1 text-sm font-medium text-gray-700 dark:text-gray-200">
-                {book.average_rating?.toFixed(1) || book.rating || 'N/A'}
-              </span>
-              {book.ratings_count && (
-                <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
-                  ({book.ratings_count})
-                </span>
-              )}
-            </div>
-            {book.tagline && (
-              <span className="text-xs text-gray-500 dark:text-gray-400 italic line-clamp-1">
-                {book.tagline}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
+const BookIcon = () => (
+    <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+    </svg>
+);
 
-      {isExpanded && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 animate-fade-in"
-          onClick={() => setIsExpanded(false)}
-        >
-          <div
-            className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="relative">
-              <button
-                onClick={() => setIsExpanded(false)}
-                className="absolute top-4 right-4 z-10 bg-gray-800 bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-70 transition-all"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-              <div className="flex flex-col md:flex-row">
-                <div className="md:w-1/3">
-                  <img
-                    src={book.cover_image_url || book.cover || 'https://via.placeholder.com/300x400?text=No+Cover'}
-                    alt={book.title}
-                    className="w-full h-96 object-cover"
-                  />
-                </div>
-                <div className="md:w-2/3 p-6">
-                  <h2 className="font-serif text-3xl font-bold text-gray-800 dark:text-white mb-2">
-                    {book.title}
-                  </h2>
-                  <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">{book.author || 'Unknown Author'}</p>
-                  <div className="flex items-center mb-4">
-                    <span className="text-yellow-500 text-2xl">★</span>
-                    <span className="ml-2 text-xl font-medium text-gray-700 dark:text-gray-200">
-                      {book.average_rating?.toFixed(1) || book.rating || 'N/A'}
-                    </span>
-                    {book.ratings_count && (
-                      <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                        ({book.ratings_count} ratings)
-                      </span>
-                    )}
-                  </div>
-                  {book.tagline && (
-                    <p className="text-sm text-emerald-600 dark:text-emerald-400 italic mb-4">
-                      {book.tagline}
-                    </p>
-                  )}
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {book.description || 'A captivating story that will take you on an unforgettable journey through pages filled with imagination and wonder.'}
-                  </p>
-                  {book.genre && (
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {book.genre.split(',').map((g, i) => (
-                        <span
-                          key={i}
-                          className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 rounded-full text-xs"
-                        >
-                          {g.trim()}
-                        </span>
-                      ))}
+const BookCard = ({ book }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    if (!book) return null;
+
+    const imageUrl = book.cover_image_url || 'https://placehold.co/300x450/e2e8f0/334155?text=NextRead';
+    const tagline = book.description ? `"${book.description.substring(0, 40)}..."` : '"No tagline available."';
+
+    return (
+        <>
+            <div className="bg-white rounded-lg shadow-md overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <img 
+                    src={imageUrl} 
+                    alt={`Cover for ${book.title}`}
+                    className="w-full h-56 object-cover"
+                />
+                <div className="p-5">
+                    <h3 className="text-xl font-serif font-bold text-navy truncate" title={book.title}>{book.title}</h3>
+                    <p className="text-sm text-gray-500 mt-1 mb-3 font-sans truncate" title={book.author}>{book.author}</p>
+                    <div className="flex items-center mb-3">
+                        <StarIcon />
+                        <span className="text-sm text-gray-700 font-semibold font-sans">{book.average_rating?.toFixed(1)}</span>
                     </div>
-                  )}
+                    <p className="text-sm text-gray-500 italic mb-4 h-10 font-sans">{tagline}</p>
+                    <button 
+                        onClick={() => setIsModalOpen(true)}
+                        className="text-sm text-emerald font-semibold hover:underline flex items-center font-sans"
+                    >
+                        <BookIcon />
+                        Read more
+                    </button>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
-      )}
-    </>
-  );
+            {isModalOpen && <BookDetailModal book={book} onClose={() => setIsModalOpen(false)} />}
+        </>
+    );
 };
 
 export default BookCard;

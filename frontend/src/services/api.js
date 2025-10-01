@@ -77,7 +77,8 @@ export const goalsAPI = {
 
   selectGoal: async (goalId) => {
     try {
-      const response = await api.post(`/users/me/goal?goal_id=${goalId}`);
+      // Corrected to use request body as per latest backend changes
+      const response = await api.post(`/users/me/goal`, { goal_id: goalId });
       return { success: true, data: response.data };
     } catch (error) {
       return {
@@ -102,8 +103,11 @@ export const booksAPI = {
     }
   },
 
+  // --- ADD THIS NEW SEARCH FUNCTION ---
   search: async (query) => {
+    if (!query) return { success: false, error: 'Search query cannot be empty.' };
     try {
+      // Make a GET request to the search endpoint with the query parameter
       const response = await api.get(`/books/search?q=${encodeURIComponent(query)}`);
       return { success: true, data: response.data };
     } catch (error) {
