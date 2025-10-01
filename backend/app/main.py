@@ -175,7 +175,6 @@ def read_book_details(book_id: int, db: Session = Depends(get_db)):
 
 
 
-# --- ADD THIS NEW ENDPOINT ---
 @app.post("/books/{book_id}/rate", response_model=schemas.Book)
 def rate_a_book(
     book_id: int,
