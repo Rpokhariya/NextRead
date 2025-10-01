@@ -5,7 +5,6 @@ const AuthModal = ({ isOpen, onClose, defaultMode = 'signin' }) => {
   const [mode, setMode] = useState(defaultMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
@@ -22,16 +21,18 @@ const AuthModal = ({ isOpen, onClose, defaultMode = 'signin' }) => {
       if (mode === 'signin') {
         result = await signIn(email, password);
       } else {
-        if (!name.trim()) {
-          setError('Please enter your name');
+        if (password.length < 8) {
+          setError('Password must be at least 8 characters');
           setLoading(false);
           return;
         }
-        result = await signUp(email, password, name);
+        result = await signUp(email, password);
       }
 
       if (result.success) {
         onClose();
+        setEmail('');
+        setPassword('');
       } else {
         setError(result.error || 'Authentication failed');
       }
@@ -65,21 +66,6 @@ const AuthModal = ({ isOpen, onClose, defaultMode = 'signin' }) => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {mode === 'signup' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Name
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                required
-              />
-            </div>
-          )}
-
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Email

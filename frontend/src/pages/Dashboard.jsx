@@ -1,118 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
+import { booksAPI } from '../services/api';
 import Header from '../components/Header';
 import BookCard from '../components/BookCard';
 import SearchBar from '../components/SearchBar';
-
-const mockSpotlightBook = {
-  id: 'spotlight',
-  title: "Project Hail Mary",
-  author: "Andy Weir",
-  rating: "4.9",
-  cover: "https://images.pexels.com/photos/2908984/pexels-photo-2908984.jpeg",
-  tagline: "A lone astronaut must save humanity",
-  description: "Ryland Grace is the sole survivor on a desperate, last-chance mission—and if he fails, humanity and the earth itself will perish.",
-  genre: "Science Fiction, Thriller, Adventure"
-};
-
-const mockRecommendedBooks = [
-  {
-    id: 'r1',
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    rating: "4.7",
-    cover: "https://images.pexels.com/photos/3943723/pexels-photo-3943723.jpeg",
-    tagline: "Timeless lessons on wealth"
-  },
-  {
-    id: 'r2',
-    title: "Educated",
-    author: "Tara Westover",
-    rating: "4.6",
-    cover: "https://images.pexels.com/photos/1370295/pexels-photo-1370295.jpeg",
-    tagline: "A memoir of transformation"
-  },
-  {
-    id: 'r3',
-    title: "The Power of Now",
-    author: "Eckhart Tolle",
-    rating: "4.5",
-    cover: "https://images.pexels.com/photos/1853542/pexels-photo-1853542.jpeg",
-    tagline: "Spiritual enlightenment guide"
-  },
-  {
-    id: 'r4',
-    title: "Thinking, Fast and Slow",
-    author: "Daniel Kahneman",
-    rating: "4.6",
-    cover: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg",
-    tagline: "How we make decisions"
-  },
-  {
-    id: 'r5',
-    title: "The Alchemist",
-    author: "Paulo Coelho",
-    rating: "4.4",
-    cover: "https://images.pexels.com/photos/1242348/pexels-photo-1242348.jpeg",
-    tagline: "Follow your dreams"
-  }
-];
-
-const mockPopularBooks = [
-  {
-    id: 'p1',
-    title: "It Ends with Us",
-    author: "Colleen Hoover",
-    rating: "4.5",
-    cover: "https://images.pexels.com/photos/2228570/pexels-photo-2228570.jpeg"
-  },
-  {
-    id: 'p2',
-    title: "The Thursday Murder Club",
-    author: "Richard Osman",
-    rating: "4.6",
-    cover: "https://images.pexels.com/photos/2228553/pexels-photo-2228553.jpeg"
-  },
-  {
-    id: 'p3',
-    title: "Verity",
-    author: "Colleen Hoover",
-    rating: "4.5",
-    cover: "https://images.pexels.com/photos/3358707/pexels-photo-3358707.jpeg"
-  },
-  {
-    id: 'p4',
-    title: "The Four Winds",
-    author: "Kristin Hannah",
-    rating: "4.7",
-    cover: "https://images.pexels.com/photos/2558605/pexels-photo-2558605.jpeg"
-  },
-  {
-    id: 'p5',
-    title: "Circe",
-    author: "Madeline Miller",
-    rating: "4.6",
-    cover: "https://images.pexels.com/photos/2333394/pexels-photo-2333394.jpeg"
-  }
-];
-
-const readingTips = [
-  "Read 20 pages before bed for better sleep",
-  "Try alternating between fiction and non-fiction",
-  "Keep a reading journal to track your thoughts",
-  "Join a book club to discover new perspectives",
-  "Set a realistic reading goal for the month"
-];
 
 const Dashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchResults, setSearchResults] = useState(null);
+  const [recommendedBooks, setRecommendedBooks] = useState([]);
+  const [popularBooks, setPopularBooks] = useState([]);
+  const [spotlightBook, setSpotlightBook] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
-  const [wishlist, setWishlist] = useState([]);
-  const [readingStreak, setReadingStreak] = useState(7);
-  const [dailyTip, setDailyTip] = useState('');
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedBookForRating, setSelectedBookForRating] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
 
   useEffect(() => {
     if (!user) {
@@ -122,39 +29,106 @@ const Dashboard = () => {
 
     if (!user.hasCompletedGoals) {
       navigate('/goals');
+      return;
     }
 
-    const tip = readingTips[Math.floor(Math.random() * readingTips.length)];
-    setDailyTip(tip);
+    loadDashboardData();
   }, [user, navigate]);
 
-  const handleSearch = (query) => {
-    const mockResults = [
-      {
-        id: 's1',
-        title: query,
-        author: "Search Result Author",
-        rating: "4.5",
-        cover: "https://images.pexels.com/photos/1370295/pexels-photo-1370295.jpeg"
-      },
-      ...mockRecommendedBooks.slice(0, 6)
-    ];
-    setSearchResults(mockResults);
+  const loadDashboardData = async () => {
+    setLoading(true);
+
+    const [recommendedResult, popularResult] = await Promise.all([
+      booksAPI.getRecommendations(),
+      booksAPI.getPopular()
+    ]);
+
+    if (recommendedResult.success && recommendedResult.data.length > 0) {
+      setRecommendedBooks(recommendedResult.data);
+      setSpotlightBook(recommendedResult.data[0]);
+    } else {
+      toast.warning('No personalized recommendations available yet');
+      setRecommendedBooks([]);
+    }
+
+    if (popularResult.success && popularResult.data.length > 0) {
+      setPopularBooks(popularResult.data);
+      if (!spotlightBook && popularResult.data.length > 0) {
+        setSpotlightBook(popularResult.data[0]);
+      }
+    } else {
+      setPopularBooks([]);
+    }
+
+    setLoading(false);
+  };
+
+  const handleSearch = async (query) => {
+    const result = await booksAPI.search(query);
+
+    if (result.success) {
+      if (result.data.length > 0) {
+        setSearchResults(result.data);
+        toast.success(`Found ${result.data.length} book(s)`);
+      } else {
+        toast.info('No books found for your search');
+        setSearchResults([]);
+      }
+    } else {
+      toast.error('Search failed. Please try again.');
+    }
   };
 
   const clearSearch = () => {
     setSearchResults(null);
   };
 
-  const toggleWishlist = (bookId) => {
-    setWishlist((prev) =>
-      prev.includes(bookId)
-        ? prev.filter((id) => id !== bookId)
-        : [...prev, bookId]
-    );
+  const openRatingModal = (book) => {
+    setSelectedBookForRating(book);
+    setRating(0);
+    setHoverRating(0);
+    setShowRatingModal(true);
+  };
+
+  const closeRatingModal = () => {
+    setShowRatingModal(false);
+    setSelectedBookForRating(null);
+    setRating(0);
+    setHoverRating(0);
+  };
+
+  const submitRating = async () => {
+    if (!rating || !selectedBookForRating) {
+      toast.warning('Please select a rating');
+      return;
+    }
+
+    const result = await booksAPI.rate(selectedBookForRating.id, rating);
+
+    if (result.success) {
+      toast.success('Thank you for rating!');
+      closeRatingModal();
+      loadDashboardData();
+    } else {
+      toast.error(result.error || 'Failed to submit rating');
+    }
   };
 
   if (!user) return null;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <Header />
+        <div className="flex items-center justify-center min-h-[80vh]">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading your recommendations...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -164,46 +138,20 @@ const Dashboard = () => {
         <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="font-serif text-4xl font-bold text-gray-800 dark:text-white mb-2">
-              Welcome back, {user.name}!
+              Welcome back!
             </h1>
             <p className="text-gray-600 dark:text-gray-300">
               Continue your reading journey
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">🔥</span>
-                <div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Reading Streak</p>
-                  <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                    {readingStreak} days
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowGoalsModal(true)}
-              className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-blue-600 text-white rounded-lg hover:from-emerald-700 hover:to-blue-700 transition-all shadow-md"
-            >
-              Update Goals
-            </button>
-          </div>
+          <button
+            onClick={() => setShowGoalsModal(true)}
+            className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-blue-600 text-white rounded-lg hover:from-emerald-700 hover:to-blue-700 transition-all shadow-md"
+          >
+            Update Goals
+          </button>
         </div>
-
-        {dailyTip && (
-          <div className="mb-8 bg-gradient-to-r from-emerald-100 to-blue-100 dark:from-emerald-900 dark:to-blue-900 rounded-lg p-4 shadow-md animate-fade-in">
-            <div className="flex items-start gap-3">
-              <span className="text-2xl">💡</span>
-              <div>
-                <p className="font-medium text-gray-800 dark:text-white mb-1">Daily Reading Tip</p>
-                <p className="text-gray-700 dark:text-gray-300">{dailyTip}</p>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div className="mb-8">
           <SearchBar onSearch={handleSearch} />
@@ -213,104 +161,119 @@ const Dashboard = () => {
           <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-serif text-3xl font-bold text-gray-800 dark:text-white">
-                Search Results & Similar Books
+                Search Results ({searchResults.length})
               </h2>
               <button
                 onClick={clearSearch}
-                className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center gap-2"
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Back
+                Clear Search
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {searchResults.map((book) => (
-                <BookCard key={book.id} book={book} />
+                <div key={book.id}>
+                  <BookCard book={book} />
+                  <button
+                    onClick={() => openRatingModal(book)}
+                    className="mt-2 w-full px-3 py-1 text-sm bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors"
+                  >
+                    Rate Book
+                  </button>
+                </div>
               ))}
             </div>
           </div>
         ) : (
           <>
-            <div className="mb-12">
-              <h2 className="font-serif text-3xl font-bold text-gray-800 dark:text-white mb-6">
-                Today's Spotlight
-              </h2>
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-                <div className="flex flex-col md:flex-row">
-                  <div className="md:w-1/3">
-                    <img
-                      src={mockSpotlightBook.cover}
-                      alt={mockSpotlightBook.title}
-                      className="w-full h-96 object-cover"
-                    />
-                  </div>
-                  <div className="md:w-2/3 p-8">
-                    <h3 className="font-serif text-4xl font-bold text-gray-800 dark:text-white mb-3">
-                      {mockSpotlightBook.title}
-                    </h3>
-                    <p className="text-xl text-gray-600 dark:text-gray-300 mb-4">
-                      {mockSpotlightBook.author}
-                    </p>
-                    <div className="flex items-center mb-4">
-                      <span className="text-yellow-500 text-3xl">★</span>
-                      <span className="ml-2 text-2xl font-medium text-gray-700 dark:text-gray-200">
-                        {mockSpotlightBook.rating}
-                      </span>
+            {spotlightBook && (
+              <div className="mb-12">
+                <h2 className="font-serif text-3xl font-bold text-gray-800 dark:text-white mb-6">
+                  Today's Spotlight
+                </h2>
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl overflow-hidden">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-1/3">
+                      <img
+                        src={spotlightBook.cover_image_url || 'https://via.placeholder.com/300x400?text=No+Cover'}
+                        alt={spotlightBook.title}
+                        className="w-full h-96 object-cover"
+                      />
                     </div>
-                    <p className="text-emerald-600 dark:text-emerald-400 italic mb-4 text-lg">
-                      {mockSpotlightBook.tagline}
-                    </p>
-                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                      {mockSpotlightBook.description}
-                    </p>
-                    <button
-                      onClick={() => toggleWishlist(mockSpotlightBook.id)}
-                      className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                        wishlist.includes(mockSpotlightBook.id)
-                          ? 'bg-red-600 text-white hover:bg-red-700'
-                          : 'bg-gradient-to-r from-emerald-600 to-blue-600 text-white hover:from-emerald-700 hover:to-blue-700'
-                      }`}
-                    >
-                      {wishlist.includes(mockSpotlightBook.id) ? '❤️ In Wishlist' : '+ Add to Wishlist'}
-                    </button>
+                    <div className="md:w-2/3 p-8">
+                      <h3 className="font-serif text-4xl font-bold text-gray-800 dark:text-white mb-3">
+                        {spotlightBook.title}
+                      </h3>
+                      <p className="text-xl text-gray-600 dark:text-gray-300 mb-4">
+                        {spotlightBook.author || 'Unknown Author'}
+                      </p>
+                      <div className="flex items-center mb-4">
+                        <span className="text-yellow-500 text-3xl">★</span>
+                        <span className="ml-2 text-2xl font-medium text-gray-700 dark:text-gray-200">
+                          {spotlightBook.average_rating?.toFixed(1) || 'N/A'}
+                        </span>
+                        {spotlightBook.ratings_count && (
+                          <span className="ml-2 text-gray-500 dark:text-gray-400">
+                            ({spotlightBook.ratings_count} ratings)
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+                        {spotlightBook.description || 'A must-read book that will captivate your imagination.'}
+                      </p>
+                      <button
+                        onClick={() => openRatingModal(spotlightBook)}
+                        className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-blue-600 text-white rounded-lg hover:from-emerald-700 hover:to-blue-700 transition-all font-medium"
+                      >
+                        Rate This Book
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <div className="mb-12">
-              <h2 className="font-serif text-3xl font-bold text-gray-800 dark:text-white mb-6">
-                Recommended for You
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                {mockRecommendedBooks.map((book) => (
-                  <BookCard key={book.id} book={book} />
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-12">
-              <h2 className="font-serif text-3xl font-bold text-gray-800 dark:text-white mb-6">
-                Popular Right Now
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                {mockPopularBooks.map((book) => (
-                  <BookCard key={book.id} book={book} />
-                ))}
-              </div>
-            </div>
-
-            {wishlist.length > 0 && (
+            {recommendedBooks.length > 0 && (
               <div className="mb-12">
                 <h2 className="font-serif text-3xl font-bold text-gray-800 dark:text-white mb-6">
-                  My Wishlist
+                  Recommended for You
                 </h2>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md">
-                  <p className="text-gray-700 dark:text-gray-300">
-                    You have {wishlist.length} book{wishlist.length !== 1 ? 's' : ''} in your wishlist
-                  </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                  {recommendedBooks.slice(1).map((book) => (
+                    <div key={book.id}>
+                      <BookCard book={book} />
+                      <button
+                        onClick={() => openRatingModal(book)}
+                        className="mt-2 w-full px-3 py-1 text-sm bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors"
+                      >
+                        Rate Book
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {popularBooks.length > 0 && (
+              <div className="mb-12">
+                <h2 className="font-serif text-3xl font-bold text-gray-800 dark:text-white mb-6">
+                  Popular Right Now
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                  {popularBooks.map((book) => (
+                    <div key={book.id}>
+                      <BookCard book={book} />
+                      <button
+                        onClick={() => openRatingModal(book)}
+                        className="mt-2 w-full px-3 py-1 text-sm bg-emerald-600 text-white rounded hover:bg-emerald-700 transition-colors"
+                      >
+                        Rate Book
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -327,6 +290,14 @@ const Dashboard = () => {
             className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-8"
             onClick={(e) => e.stopPropagation()}
           >
+            <button
+              onClick={() => setShowGoalsModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <h2 className="font-serif text-2xl font-bold text-gray-800 dark:text-white mb-4">
               Update Your Goals
             </h2>
@@ -345,6 +316,81 @@ const Dashboard = () => {
               </button>
               <button
                 onClick={() => setShowGoalsModal(false)}
+                className="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRatingModal && selectedBookForRating && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+          onClick={closeRatingModal}
+        >
+          <div
+            className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-8 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={closeRatingModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <h2 className="font-serif text-2xl font-bold text-gray-800 dark:text-white mb-4">
+              Rate "{selectedBookForRating.title}"
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              How would you rate this book?
+            </p>
+            <div className="flex justify-center gap-2 mb-6">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setRating(star)}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  className="transition-transform hover:scale-110"
+                >
+                  <svg
+                    className={`w-12 h-12 ${
+                      star <= (hoverRating || rating)
+                        ? 'text-yellow-500 fill-current'
+                        : 'text-gray-300 dark:text-gray-600'
+                    }`}
+                    fill={star <= (hoverRating || rating) ? 'currentColor' : 'none'}
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                    />
+                  </svg>
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={submitRating}
+                disabled={!rating}
+                className={`flex-1 px-4 py-2 rounded-lg transition-all ${
+                  rating
+                    ? 'bg-gradient-to-r from-emerald-600 to-blue-600 text-white hover:from-emerald-700 hover:to-blue-700'
+                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Submit Rating
+              </button>
+              <button
+                onClick={closeRatingModal}
                 className="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-all"
               >
                 Cancel
