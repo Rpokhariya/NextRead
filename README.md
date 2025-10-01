@@ -1,5 +1,3 @@
-# Live Demo : [**➡️ Click here to find your next read!**](https://your-live-demo-link.com) <!-- Replace with your actual live demo link -->
-
 ## NextRead
 
 ### 📖 Project Description
