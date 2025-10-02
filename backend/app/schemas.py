@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from typing import List
 
 # --- Book Schema ---
 class Book(BaseModel):
@@ -19,6 +20,14 @@ class Goal(BaseModel):
     
     id: int
     name: str
+
+# Schema for SETTING or REPLACING the user's goals with a list
+class UserGoalsUpdate(BaseModel):
+    goal_ids: List[int]
+
+# Schema for ADDING a single goal
+class UserGoalAdd(BaseModel):
+    goal_id: int
 
 # --- Ratings Schema ---
 class RatingCreate(BaseModel):

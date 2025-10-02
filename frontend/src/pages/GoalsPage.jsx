@@ -84,7 +84,7 @@ const GoalsPage = () => {
       return;
     }
     setSaving(true);
-    const result = await goalsAPI.selectGoals(selectedGoals); // Note: plural 'selectGoals'
+    const result = await goalsAPI.setGoals(selectedGoals);
     if (result.success) {
       updateUserGoals();
       toast.success('Your goals have been saved!');
