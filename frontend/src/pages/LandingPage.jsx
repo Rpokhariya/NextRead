@@ -8,9 +8,10 @@ import AuthModal from '../components/AuthModal';
 import BookDetailModal from '../components/BookDetailModal'; // Import the detail modal
 
 const quotes = [
-    "A room without books is like a body without a soul.",
+    // "A room without books is like a body without a soul.",
     "So many books, so little time...",
     "A reader lives a thousand lives before he dies.",
+    "Reading is a discount ticket to everywhere."
 ];
 
 const LandingPage = () => {
