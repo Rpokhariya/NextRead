@@ -202,6 +202,14 @@ def rate_a_book(
     return updated_book
 
 
+# --- ADD THIS NEW ENDPOINT ---
+@app.get("/users/me", response_model=schemas.UserWithGoals)
+def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
+    """
+    Gets the profile for the current logged-in user, including their selected goals.
+    """
+    return current_user
+
 # --- SET / REPLACE all goals for a user (e.g., for first-time setup) ---
 @app.put("/users/me/goals", status_code=status.HTTP_200_OK)
 def set_user_goals(

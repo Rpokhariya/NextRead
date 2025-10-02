@@ -29,6 +29,9 @@ class UserGoalsUpdate(BaseModel):
 class UserGoalAdd(BaseModel):
     goal_id: int
 
+
+
+
 # --- Ratings Schema ---
 class RatingCreate(BaseModel):
     rating: float = Field(..., ge=1, le=5) # Rating must be between 1 and 5
@@ -50,6 +53,10 @@ class User(BaseModel):
     
     id: int
     email: EmailStr
+
+# This schema extends the base User to include their associated goals.
+class UserWithGoals(User):
+    goals: List[Goal] = []
 
 # --- Token Schemas ---
 
