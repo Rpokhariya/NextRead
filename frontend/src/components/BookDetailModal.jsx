@@ -1,4 +1,5 @@
-import React from 'react';
+// import React from 'react';
+import placeholderImg from '../assets/placeholder_img.jpg';
 
 // --- Helper Icons ---
 const StarIcon = () => (
@@ -24,6 +25,13 @@ const BookDetailModal = ({ book, onClose }) => {
         return num;
     };
 
+        const placeholderSeededUrl = "https://placehold.co/200x300?text=Not+Found";
+    
+        const imageUrl = 
+        book.cover_image_url && book.cover_image_url !== placeholderSeededUrl
+            ? book.cover_image_url
+            : placeholderImg;
+
     return (
         <div 
             className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4 animate-fade-in"
@@ -39,7 +47,7 @@ const BookDetailModal = ({ book, onClose }) => {
                 
                 <div className="flex flex-col sm:flex-row gap-8">
                     <img 
-                        src={book.cover_image_url || 'https://placehold.co/300x450/e2e8f0/334155?text=NextRead'} 
+                        src={imageUrl} 
                         alt={`Cover for ${book.title}`}
                         className="w-40 h-60 object-cover rounded-md shadow-lg flex-shrink-0 mx-auto sm:mx-0"
                     />

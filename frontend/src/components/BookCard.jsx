@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import BookDetailModal from './BookDetailModal'; 
+import placeholderImg from '../assets/placeholder_img.jpg'; // adjust path
+
 
 // --- Helper Icons ---
 const StarIcon = () => (
@@ -18,7 +20,12 @@ const BookCard = ({ book }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     if (!book) return null;
 
-    const imageUrl = book.cover_image_url || 'https://placehold.co/300x450/e2e8f0/334155?text=NextRead';
+    const placeholderSeededUrl = "https://placehold.co/200x300?text=Not+Found";
+
+    const imageUrl = 
+    book.cover_image_url && book.cover_image_url !== placeholderSeededUrl
+        ? book.cover_image_url
+        : placeholderImg;
     const tagline = book.description ? `"${book.description.substring(0, 40)}..."` : '"No tagline available."';
 
     return (

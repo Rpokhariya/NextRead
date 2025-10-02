@@ -9,6 +9,18 @@ const api = axios.create({
   },
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      toast.error("Session expired. Please log in again.");
+      localStorage.removeItem("token");
+      window.location.href = "/";  // force redirect to landing
+    }
+    return Promise.reject(error);
+  }
+);
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('nextread_token');
@@ -59,6 +71,19 @@ export const authAPI = {
       return {
         success: false,
         error: error.response?.data?.detail || 'Login failed'
+      };
+    }
+  },
+
+    getCurrentUser: async () => {
+    try {
+      const response = await api.get('/users/me');
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.detail || 'Failed to fetch user data',
+        data: null
       };
     }
   },

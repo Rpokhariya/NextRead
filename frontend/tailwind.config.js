@@ -17,6 +17,7 @@ export default {
         'navy': '#0A192F',
         'emerald': '#0F766E',
         'golden': '#FFC700',
+        'lightcream':'#FAF9F6'
       },
       // Define custom animations for smooth transitions
       animation: {

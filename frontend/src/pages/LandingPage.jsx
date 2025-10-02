@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
 import { booksAPI } from '../services/api';
+
+// Import required components
 import BookCard from '../components/BookCard';
 import AuthModal from '../components/AuthModal';
-import BookDetailModal from '../components/BookDetailModal'; // Import the detail modal
+import BookDetailModal from '../components/BookDetailModal';
+import SearchBar from '../components/SearchBar'; // Import the SearchBar component
 
 const quotes = [
-    // "A room without books is like a body without a soul.",
     "So many books, so little time...",
     "A reader lives a thousand lives before he dies.",
     "Reading is a discount ticket to everywhere."
@@ -20,20 +22,37 @@ const LandingPage = () => {
   const [popularBooks, setPopularBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // --- NEW STATE FOR SEARCH ---
-  const [searchQuery, setSearchQuery] = useState('');
+  // State for search results
   const [searchResultBook, setSearchResultBook] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect to dashboard if user is already logged in
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
+//   // Redirect to dashboard if user is already logged in
+// useEffect(() => {
+//   if (user) {
+//     // Check if the user has selected any goals.
+//     const hasSetGoals = user.goals && user.goals.length > 0;
+
+//     if (hasSetGoals) {
+//       // If they have goals, they are an existing user. Send them to the dashboard.
+//       navigate('/dashboard');
+//     } else {
+//       // If they DON'T have goals, they are a new user. Send them to the goals page.
+//       navigate('/goals');
+//     }
+//   }
+// }, [user, navigate]);
+
+// In LandingPage.jsx
+useEffect(() => {
+  if (user) {
+    // Temporarily force navigation to the dashboard for testing
+    navigate('/dashboard'); 
+  }
+}, [user, navigate]);
+
 
   // Cycle through quotes
   useEffect(() => {
@@ -59,19 +78,23 @@ const LandingPage = () => {
     loadPopularBooks();
   }, []);
 
-  // --- NEW FUNCTION TO HANDLE SEARCH ---
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-        toast.info("Please enter a book title or author to search.");
-        return;
+  // Updated function to handle search, now accepts a query from the SearchBar component
+const handleSearch = async (query) => {
+    // Add this check at the beginning of the function
+    if (!query || !query.trim()) {
+      toast.info("Please enter a book title or author to search.");
+      return; // Stop the function from proceeding further
     }
+    setSearchResultBook(null);
+
     setIsSearchLoading(true);
-    const result = await booksAPI.search(searchQuery);
+    const result = await booksAPI.search(query);
+    
     if (result.success && result.data.length > 0) {
         // If books are found, show the detail modal for the first result
         setSearchResultBook(result.data[0]);
     } else if (result.success) {
-        toast.info(`No books found for "${searchQuery}".`);
+        toast.info(`No books found for "${query}".`);
     } else {
         toast.error(result.error);
     }
@@ -80,7 +103,7 @@ const LandingPage = () => {
 
   return (
     <div className="bg-cream font-sans">
-      {/* ... (Hero Section and Popular Books Section remain the same) ... */}
+      {/* Hero Section */}
       <div className="relative h-[83vh] flex items-center justify-center text-white text-center px-4">
         <div 
           className="absolute inset-0 bg-cover bg-center"
@@ -109,6 +132,8 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Popular Books Section */}
       <div className="py-20 px-4">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-serif font-bold text-teal-800">Popular Books</h2>
@@ -142,28 +167,22 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* Explore Section with updated functionality */}
-      <div className="bg-white py-20 px-4">
+      {/* Explore Section with integrated SearchBar component */}
+      <div className="bg-cream py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl font-serif font-bold text-navy">Explore Before You Join</h2>
             <p className="text-lg text-gray-600 mt-2 mb-8 font-sans">Try searching for books to see what NextRead can offer</p>
-            <div className="flex items-center max-w-xl mx-auto shadow-md rounded-md">
-                <input 
-                    type="text"
-                    placeholder="Search for any book..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                    className="w-full px-5 py-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-golden font-sans"
-                />
-                <button 
-                    onClick={handleSearch}
-                    disabled={isSearchLoading}
-                    className="px-6 py-3 bg-golden text-navy font-semibold rounded-r-md hover:bg-yellow-500 transition-colors disabled:opacity-50"
-                >
-                    {isSearchLoading ? '...' : 'Search'}
-                </button>
-            </div>
+            
+            {/* Using the SearchBar component and passing the handler */}
+            <SearchBar onSearch={handleSearch} />
+            
+            {isSearchLoading && (
+                <div className="mt-4 text-center">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-teal-800"></div>
+                    <p className="text-gray-600">Searching...</p>
+                </div>
+            )}
+
             <p className="text-gray-600 mt-6 font-sans">
                 Want personalized recommendations? <a href="#" onClick={(e) => { e.preventDefault(); setAuthModal({ isOpen: true, mode: 'signup' }); }} className="text-emerald font-semibold hover:underline">Create a free account</a>
             </p>
@@ -171,7 +190,8 @@ const LandingPage = () => {
       </div>
       
       {/* Footer */}
-      <footer className="text-center py-10 bg-cream">
+      <div className="border-t border-gray-200"></div>
+      <footer className="text-center py-10 bg-lightcream">
         <p className="text-navy font-serif text-2xl mb-1">NextRead</p>
         <p className="text-gray-500 font-sans">Your personalized book recommendation companion</p>
       </footer>
@@ -182,7 +202,8 @@ const LandingPage = () => {
         onClose={() => setAuthModal({ ...authModal, isOpen: false })}
         defaultMode={authModal.mode}
       />
-      {/* This will render the detail modal when a book is found by the search */}
+      
+      {/* BookDetailModal for displaying search results */}
       {searchResultBook && (
         <BookDetailModal 
             book={searchResultBook}
