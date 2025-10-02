@@ -26,6 +26,9 @@ export const authAPI = {
   register: async (email, password) => {
     try {
       const response = await api.post('/register', { email, password });
+      if (response.data.access_token) {
+        localStorage.setItem('nextread_token', response.data.access_token);
+      }
       return { success: true, data: response.data };
     } catch (error) {
       return {
@@ -75,15 +78,41 @@ export const goalsAPI = {
     }
   },
 
-  selectGoal: async (goalId) => {
+  // Function to SET/REPLACE all user goals with a list (uses PUT)
+  setGoals: async (goalIds) => {
     try {
-      // Corrected to use request body as per latest backend changes
-      const response = await api.post(`/users/me/goal`, { goal_id: goalId });
+      const response = await api.put(`/users/me/goals`, { goal_ids: goalIds });
       return { success: true, data: response.data };
     } catch (error) {
       return {
         success: false,
-        error: error.response?.data?.detail || 'Failed to select goal'
+        error: error.response?.data?.detail || 'Failed to save goals'
+      };
+    }
+  },
+
+  // Function to ADD a single goal (uses POST)
+  addGoal: async (goalId) => {
+    try {
+      const response = await api.post(`/users/me/goals`, { goal_id: goalId });
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.detail || 'Failed to add goal'
+      };
+    }
+  },
+
+  // Function to DELETE a single goal (uses DELETE)
+  deleteGoal: async (goalId) => {
+    try {
+      const response = await api.delete(`/users/me/goals/${goalId}`);
+      return { success: true, data: response.data };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.detail || 'Failed to delete goal'
       };
     }
   },

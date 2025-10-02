@@ -66,7 +66,7 @@ def search_for_books(q: str | None = None, db: Session = Depends(get_db)):
     return books
 
 
-@app.post("/register", response_model=schemas.User)
+@app.post("/register", response_model=schemas.Token)
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     """
     This endpoint handles new user registration.
@@ -76,8 +76,11 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     
+    new_user = crud.create_user(db=db, user=user)
+    access_token = auth.create_access_token(data={"sub": new_user.email})
+
     # If the user doesn't exist, create them.
-    return crud.create_user(db=db, user=user)
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @app.post("/login", response_model=schemas.Token)
@@ -103,35 +106,38 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.post("/users/me/goal")
-def select_user_goal(goal_id: int, current_user: schemas.User = Depends(auth.get_current_user), db: Session = Depends(get_db)):
-    """
-    This is a protected endpoint for a logged-in user to select their active goal.
-    """
-    # 'Depends(auth.get_current_user)' is our "bouncer". It will require a valid
-    # token and return the current user's data if the token is valid.
-    
-    # Save the user's goal choice to the database.
+# @app.post("/users/me/goal", status_code=status.HTTP_200_OK)
+# def select_user_goals(
+#     goals_update: schemas.UserGoalsUpdate, # Use the new schema
+#     current_user: models.User = Depends(auth.get_current_user), # Get the full user model
+#     db: Session = Depends(get_db)
+# ):
+#     """
+#     This is a protected endpoint for a logged-in user to select their active goals.
+#     This will REPLACE all existing goals with the list provided.
+#     """
+#     # Optional: Verify that all provided goal_ids are valid goals
+#     goals_from_db = db.query(models.Goal).filter(models.Goal.id.in_(goals_update.goal_ids)).all()
+#     if len(goals_from_db) != len(goals_update.goal_ids):
+#         raise HTTPException(status_code=404, detail="One or more goal IDs are invalid.")
 
-    goal = crud.get_goal_by_id(db, goal_id=goal_id)
-    if not goal:
-        raise HTTPException(status_code=404, detail="Goal not found")
-    crud.set_active_goal(db=db, user_id=current_user.id, goal_id=goal_id)
+#     # Call the new CRUD function to set the goals
+#     crud.set_user_goals(db=db, user=current_user, goal_ids=goals_update.goal_ids)
     
-    return {"message": f"Successfully set active goal for user {current_user.email}"}
+#     return {"message": f"Successfully updated goals for user {current_user.email}"}
 
 
 
 @app.get("/users/me/recommendations", response_model=List[schemas.Book])
 def get_recommendations(
-    current_user: models.User = Depends(auth.get_current_user), # <-- BUG FIX: Changed schemas.User to models.User
+    current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
     """
     This is a protected endpoint that returns book recommendations
-    based on the logged-in user's currently selected goal.
+    based on the logged-in user's currently selected goals.
     """
-    books = crud.get_recommendations_for_user(db, user_id=current_user.id)
+    books = crud.get_recommendations_for_user(db, user_id=current_user.id) # This now works with multiple goals
     return books
 
 
@@ -194,3 +200,67 @@ def rate_a_book(
     # Call the CRUD function to save the rating and get the updated book back
     updated_book = crud.rate_book(db=db, user_id=current_user.id, book_id=book_id, rating=rating.rating)
     return updated_book
+
+
+# --- SET / REPLACE all goals for a user (e.g., for first-time setup) ---
+@app.put("/users/me/goals", status_code=status.HTTP_200_OK)
+def set_user_goals(
+    goals_update: schemas.UserGoalsUpdate, # Uses the schema with a LIST of IDs
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Sets or replaces all active goals for the logged-in user with the provided list.
+    Ideal for initial setup or a complete reset of goals.
+    """
+    # Optional: Verify that all provided goal_ids are valid goals
+    goals_from_db = db.query(models.Goal).filter(models.Goal.id.in_(goals_update.goal_ids)).all()
+    if len(goals_from_db) != len(set(goals_update.goal_ids)): # Use set to handle duplicate IDs in input
+        raise HTTPException(status_code=404, detail="One or more goal IDs are invalid.")
+
+    # Call the CRUD function to replace all goals
+    crud.set_user_goals(db=db, user=current_user, goal_ids=goals_update.goal_ids)
+    
+    return {"message": f"Successfully set goals for user {current_user.email}"}
+
+
+# --- ADD a single goal to the user's list ---
+@app.post("/users/me/goals", status_code=status.HTTP_200_OK)
+def add_user_goal(
+    goal_to_add: schemas.UserGoalAdd, # Uses the schema with a SINGLE ID
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Adds a single new goal to the logged-in user's list of active goals.
+    """
+    goal = crud.get_goal_by_id(db, goal_id=goal_to_add.goal_id)
+    if not goal:
+        raise HTTPException(status_code=404, detail=f"Goal with ID {goal_to_add.goal_id} not found.")
+
+    # Call the CRUD function to add one goal
+    updated_user = crud.add_goal_to_user(db=db, user=current_user, goal_id=goal_to_add.goal_id)
+    
+    if updated_user is None:
+         raise HTTPException(status_code=409, detail="User already has this goal.")
+    
+    return {"message": f"Successfully added goal '{goal.name}' for user {current_user.email}"}
+
+
+# --- REMOVE a single goal from the user's list ---
+@app.delete("/users/me/goals/{goal_id}", status_code=status.HTTP_200_OK)
+def delete_user_goal(
+    goal_id: int, # Goal ID comes from the URL path
+    current_user: models.User = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Removes a single goal from the logged-in user's list of active goals.
+    """
+    # Call the CRUD function to remove one goal
+    result = crud.remove_goal_from_user(db=db, user=current_user, goal_id=goal_id)
+    
+    if result is None:
+        raise HTTPException(status_code=404, detail=f"Goal with ID {goal_id} not found in user's goal list.")
+
+    return {"message": f"Successfully removed goal for user {current_user.email}"}

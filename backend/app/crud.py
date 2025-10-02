@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from . import models, auth, schemas
 from sqlalchemy import func, or_
 
+
 # function to get list of goals
 def get_goals(db: Session):
     """
@@ -41,20 +42,71 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def set_active_goal(db: Session, user_id: int, goal_id: int):
+# --- Function to set multiple goals for a user ---
+def set_user_goals(db: Session, user: models.User, goal_ids: list[int]):
     """
-    Sets or updates the active goal for a given user.
+    Replaces a user's active goals with a new list of goals.
     """
-    active_goal = db.query(models.UserActiveGoal).filter(models.UserActiveGoal.user_id == user_id).first()
-    if active_goal:
-        # If the user already has a goal, update it
-        active_goal.goal_id = goal_id
-    else:
-        # If the user doesn't have a goal, create a new entry
-        active_goal = models.UserActiveGoal(user_id=user_id, goal_id=goal_id)
-        db.add(active_goal)
+    # 1. Clear the user's existing goals
+    user.goals.clear()
+    
+    # 2. Find the new goal objects from the provided IDs
+    new_goals = db.query(models.Goal).filter(models.Goal.id.in_(goal_ids)).all()
+    
+    # 3. Add the new goals to the user's goal list
+    user.goals.extend(new_goals)
+    
+    # 4. Commit the session to save all changes
     db.commit()
-    return active_goal
+    db.refresh(user)
+    return user
+
+# --- Function to ADD a single goal to a user's list ---
+def add_goal_to_user(db: Session, user: models.User, goal_id: int):
+    """
+    Adds a single goal to a user's list of active goals.
+    Prevents adding a goal if it's already in the user's list.
+    """
+    # 1. Check if the user already has this goal
+    for existing_goal in user.goals:
+        if existing_goal.id == goal_id:
+            return None # Return None or raise an exception to indicate it's a duplicate
+
+    # 2. Find the goal object from the database
+    goal_to_add = db.query(models.Goal).filter(models.Goal.id == goal_id).first()
+    if not goal_to_add:
+        # This case should be handled in the API layer, but it's good practice
+        return None 
+
+    # 3. Add the new goal to the user's goal list
+    user.goals.append(goal_to_add)
+    
+    # 4. Commit and refresh
+    db.commit()
+    db.refresh(user)
+    return user
+
+# --- Function to REMOVE a single goal from a user's list ---
+def remove_goal_from_user(db: Session, user: models.User, goal_id: int):
+    """
+    Removes a single goal from a user's list of active goals.
+    """
+    # 1. Find the goal object to remove from the user's current list
+    goal_to_remove = None
+    for goal in user.goals:
+        if goal.id == goal_id:
+            goal_to_remove = goal
+            break
+
+    # 2. If the goal is found in the user's list, remove it
+    if goal_to_remove:
+        user.goals.remove(goal_to_remove)
+        db.commit()
+        db.refresh(user)
+        return user
+    
+    # 3. If the user doesn't have this goal, there's nothing to do
+    return None
 
 
 def get_goal_by_id(db: Session, goal_id: int):
@@ -67,27 +119,27 @@ def get_goal_by_id(db: Session, goal_id: int):
 
 def get_recommendations_for_user(db: Session, user_id: int):
     """
-    Gets book recommendations for a user based on their active goal,
+    Gets book recommendations for a user based on all of their active goals,
     sorted by average rating in descending order.
     """
-    # 1. Find the user's active goal
-    active_goal_link = db.query(models.UserActiveGoal).filter(models.UserActiveGoal.user_id == user_id).first()
-    
-    if not active_goal_link:
+    # 1. Find the user and their associated goals
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user or not user.goals:
         return []
         
-    goal_id = active_goal_link.goal_id
+    # 2. Get a list of all goal IDs for the user
+    user_goal_ids = [goal.id for goal in user.goals]
     
-    # 2. Query for books linked to that goal and sort them
-    #    - .join() connects the books table with the book_goals table
-    #    - .filter() selects only the books matching the user's goal_id
-    #    - .order_by() sorts the results by the average_rating column in descending order
+    # 3. Query for books linked to ANY of those goals
+    #    - .in_(user_goal_ids) finds books where the goal_id is in our list
+    #    - .distinct() ensures we don't get duplicate books if a book matches multiple goals
     recommended_books = (
         db.query(models.Book)
         .join(models.book_goals_table)
-        .filter(models.book_goals_table.c.goal_id == goal_id)
+        .filter(models.book_goals_table.c.goal_id.in_(user_goal_ids))
         .filter(models.Book.ratings_count >= 50)
         .order_by(models.Book.average_rating.desc())
+        .distinct()
         .all()
     )
 

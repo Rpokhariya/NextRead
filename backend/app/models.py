@@ -9,6 +9,12 @@ book_goals_table = Table('book_goals', Base.metadata,
     Column('goal_id', Integer, ForeignKey('goals.id'), primary_key=True)
 )
 
+# Junction table for the many-to-many relationship between users and goals
+user_goals_table = Table('user_goals', Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.id'), primary_key=True),
+    Column('goal_id', Integer, ForeignKey('goals.id'), primary_key=True)
+)
+
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
@@ -16,7 +22,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
 
     # Relationship to the UserActiveGoal table
-    active_goal = relationship("UserActiveGoal", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    goals = relationship("Goal", secondary=user_goals_table)
 
 class Book(Base):
     __tablename__ = "books"
@@ -38,15 +44,6 @@ class Goal(Base):
 
     # Many-to-many relationship with Book
     books = relationship("Book", secondary=book_goals_table, back_populates="goals")
-
-class UserActiveGoal(Base):
-    __tablename__ = "user_active_goal"
-    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
-    goal_id = Column(Integer, ForeignKey('goals.id'))
-
-    # Relationships back to User and Goal
-    user = relationship("User", back_populates="active_goal")
-    goal = relationship("Goal")
 
 
 class Rating(Base):
