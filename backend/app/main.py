@@ -33,6 +33,10 @@ app.add_middleware(
 
 # --- API Endpoints ---
 
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to the API!"}
+
 @app.get("/goals", response_model=List[schemas.Goal])
 def read_goals(db: Session = Depends(get_db)):
     """
