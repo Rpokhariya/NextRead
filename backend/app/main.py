@@ -4,6 +4,7 @@
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm # Import form data dependency
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from typing import List
 
 # --- Local Imports ---
@@ -185,25 +186,49 @@ def read_book_details(book_id: int, db: Session = Depends(get_db)):
 
 
 
+# from sqlalchemy.exc import IntegrityError
+
 @app.post("/books/{book_id}/rate", response_model=schemas.Book)
-def rate_a_book(
+def rate_book(
     book_id: int,
     rating: schemas.RatingCreate,
     current_user: models.User = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    This is a protected endpoint that allows a logged-in user to
-    rate a book from 1 to 5.
+    Allows a logged-in user to rate a book once (1–5).
+    Stores rating in the ratings table.
+    Updates book.average_rating and ratings_count incrementally.
     """
-    # First, check if the book exists
+
     db_book = crud.get_book_by_id(db, book_id=book_id)
     if not db_book:
         raise HTTPException(status_code=404, detail="Book not found")
-    
-    # Call the CRUD function to save the rating and get the updated book back
-    updated_book = crud.rate_book(db=db, user_id=current_user.id, book_id=book_id, rating=rating.rating)
-    return updated_book
+
+    # Insert into ratings table
+    new_rating = models.Rating(
+        book_id=book_id,
+        user_id=current_user.id,
+        rating=rating.rating
+    )
+    db.add(new_rating)
+
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="You have already rated this book")
+
+    # ✅ Incrementally update book rating stats
+    total_rating = (db_book.average_rating or 0) * (db_book.ratings_count or 0)
+    total_rating += rating.rating
+    db_book.ratings_count = (db_book.ratings_count or 0) + 1
+    db_book.average_rating = round(total_rating / db_book.ratings_count, 1)
+
+    db.commit()
+    db.refresh(db_book)
+    return db_book
+
 
 
 # --- ADD THIS NEW ENDPOINT ---

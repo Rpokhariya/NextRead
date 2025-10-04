@@ -29,6 +29,15 @@ const LandingPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+    const handleBookUpdate = (updatedBook) => {
+    setPopularBooks(currentBooks => 
+      currentBooks.map(book => 
+          book.id === updatedBook.id ? updatedBook : book
+      )
+    );
+  };
+
+
 //   // Redirect to dashboard if user is already logged in
 // useEffect(() => {
 //   if (user) {
@@ -78,28 +87,36 @@ useEffect(() => {
     loadPopularBooks();
   }, []);
 
+
+
   // Updated function to handle search, now accepts a query from the SearchBar component
 const handleSearch = async (query) => {
-    // Add this check at the beginning of the function
     if (!query || !query.trim()) {
       toast.info("Please enter a book title or author to search.");
-      return; // Stop the function from proceeding further
+      return;
     }
     setSearchResultBook(null);
-
     setIsSearchLoading(true);
-    const result = await booksAPI.search(query);
-    
-    if (result.success && result.data.length > 0) {
-        // If books are found, show the detail modal for the first result
-        setSearchResultBook(result.data[0]);
-    } else if (result.success) {
+
+    const searchResult = await booksAPI.search(query);
+
+    if (searchResult.success && searchResult.data.length > 0) {
+        // Found a book. Now get its full details to trigger the AI summary.
+        const firstBookId = searchResult.data[0].id;
+        const detailResult = await booksAPI.getById(firstBookId);
+
+        if (detailResult.success) {
+            setSearchResultBook(detailResult.data); // Show modal with the fresh data
+        } else {
+            setSearchResultBook(searchResult.data[0]); // Fallback if the detail call fails
+        }
+    } else if (searchResult.success) {
         toast.info(`No books found for "${query}".`);
     } else {
-        toast.error(result.error);
+        toast.error(searchResult.error);
     }
     setIsSearchLoading(false);
-  };
+};
 
   return (
     <div className="bg-cream font-sans">
@@ -146,9 +163,13 @@ const handleSearch = async (query) => {
            </div>
         ) : (
           <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {popularBooks.slice(0, 4).map((book) => (
-              <BookCard key={book.id} book={book} />
-            ))}
+           {popularBooks.slice(0, 4).map((book) => (
+  <BookCard 
+    key={book.id} 
+    book={book} 
+    onBookUpdate={handleBookUpdate}
+  />
+))}
           </div>
         )}
         <div className="text-center mt-12">

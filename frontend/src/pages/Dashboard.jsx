@@ -19,7 +19,8 @@ const Dashboard = () => {
   const [popularBooks, setPopularBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [selectedBook, setSelectedBook] = useState(null);
+  // const [selectedBook, setSelectedBook] = useState(null);
+  
   const [showGoalsModal, setShowGoalsModal] = useState(false);
   const [userGoals, setUserGoals] = useState([]);
   const [allGoals, setAllGoals] = useState([]);
@@ -48,6 +49,14 @@ const Dashboard = () => {
       fetchGoalsData();
     }
   }, [showGoalsModal]);
+
+  const handleBookUpdate = (updatedBook) => {
+      const updater = (books) => books.map(b => b.id === updatedBook.id ? updatedBook : b);
+      
+      setRecommendedBooks(prev => updater(prev));
+      setPopularBooks(prev => updater(prev));
+      setSearchResults(prev => prev ? updater(prev) : null);
+  };
 
   const loadDashboardData = async () => {
     setLoading(true);
@@ -140,13 +149,17 @@ const Dashboard = () => {
     </div>
   );
 
-  const renderBookGrid = (books, onBookClick) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-      {books.map((book) => (
-        <BookCard key={book.id} book={book} onCardClick={onBookClick} />
-      ))}
-    </div>
-  );
+const renderBookGrid = (books) => (
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+    {books.map((book) => (
+      <BookCard 
+        key={book.id} 
+        book={book} 
+        onBookUpdate={handleBookUpdate} 
+      />
+    ))}
+  </div>
+);
 
   return (
     <div className="min-h-screen bg-cream font-sans">
@@ -189,7 +202,7 @@ const Dashboard = () => {
                 &larr; Back to Recommendations
               </button>
             </div>
-            {renderBookGrid(searchResults, setSelectedBook)}
+            {renderBookGrid(searchResults)}
           </div>
         ) : (
           <>
@@ -198,7 +211,7 @@ const Dashboard = () => {
                 <h2 className="font-serif text-3xl font-bold text-navy mb-6">
                   Recommended for You
                 </h2>
-                {renderBookGrid(recommendedBooks, setSelectedBook)}
+                {renderBookGrid(recommendedBooks, )}
               </div>
             )}
             {popularBooks.length > 0 && (
@@ -206,7 +219,7 @@ const Dashboard = () => {
                 <h2 className="font-serif text-3xl font-bold text-navy mb-6">
                   Popular Right Now
                 </h2>
-                {renderBookGrid(popularBooks.slice(0,10), setSelectedBook)}
+                {renderBookGrid(popularBooks.slice(0,10))}
               </div>
             )}
 
@@ -305,9 +318,9 @@ const Dashboard = () => {
         </div>
       )}
 
-      {selectedBook && (
+      {/* {selectedBook && (
         <BookDetailModal book={selectedBook} onClose={() => setSelectedBook(null)} />
-      )}
+      )} */}
     </div>
   );
 };
