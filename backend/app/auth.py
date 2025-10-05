@@ -63,3 +63,19 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
+
+
+def get_optional_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
+    """
+    Gets the current user if a valid token is provided.
+    Returns None instead of raising an error if the token is missing or invalid.
+    """
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+        user = crud.get_user_by_email(db, email=email)
+        return user
+    except (JWTError, AttributeError):
+        return None

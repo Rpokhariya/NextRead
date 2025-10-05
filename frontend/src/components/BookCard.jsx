@@ -8,7 +8,7 @@ const StarIcon = () => ( <svg className="w-4 h-4 text-golden mr-1" fill="current
 const BookIcon = () => ( <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg> );
 
 // LOGIC CHANGE: Component now accepts 'onBookUpdate' prop
-const BookCard = ({ book, onBookUpdate }) => {
+const BookCard = ({ book, onBookUpdate ,user}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [detailedBook, setDetailedBook] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -16,28 +16,42 @@ const BookCard = ({ book, onBookUpdate }) => {
     if (!book) return null;
 
     // LOGIC CHANGE: handleReadMore now notifies the parent
-    const handleReadMore = async () => {
-        setIsModalOpen(true);
-        setIsLoading(true);
+const handleReadMore = async () => {
+    // Immediately set the basic book data and open the modal.
+    setDetailedBook(book);
+    setIsModalOpen(true);
+    setIsLoading(true); // Keep loading state to fetch full details.
 
-        const result = await booksAPI.getById(book.id);
-        
-        if (result.success) {
-            setDetailedBook(result.data);
-            // This new 'if' block is the key to fixing the refresh issue
-            if (onBookUpdate) {
-                onBookUpdate(result.data);
-            }
-        } else {
-            toast.error("Could not load book details.");
-            setIsModalOpen(false);
+    // Attempt to fetch the richer data from the API.
+    const result = await booksAPI.getById(book.id);
+
+    // If successful, update the modal with the new data.
+    if (result.success) {
+        setDetailedBook(result.data);
+        if (onBookUpdate) {
+            onBookUpdate(result.data);
         }
-        setIsLoading(false);
-    };
+    } else {
+        // If it fails, the modal stays open with the basic info.
+        toast.error("Could not load full book details.");
+    }
+
+    setIsLoading(false); // We're done fetching.
+};
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setDetailedBook(null);
+    };
+
+    const handleModalBookUpdate = (updatedBook) => {
+        // This updates the data for the currently open modal
+        setDetailedBook(updatedBook);
+
+        // This updates the card on the page behind the modal
+        if (onBookUpdate) {
+            onBookUpdate(updatedBook);
+        }
     };
     
     const placeholderSeededUrl = "https://placehold.co/200x300?text=Not+Found";
@@ -81,7 +95,9 @@ const BookCard = ({ book, onBookUpdate }) => {
                 <BookDetailModal 
                     book={detailedBook} 
                     isLoading={isLoading}
-                    onClose={handleCloseModal} 
+                    onClose={handleCloseModal}
+                    user={user}
+                    onBookUpdate={handleModalBookUpdate}   
                 />
             )}
         </>

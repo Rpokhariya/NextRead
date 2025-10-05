@@ -156,6 +156,7 @@ const renderBookGrid = (books) => (
         key={book.id} 
         book={book} 
         onBookUpdate={handleBookUpdate} 
+        user = {user}
       />
     ))}
   </div>

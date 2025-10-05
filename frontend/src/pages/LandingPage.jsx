@@ -168,6 +168,7 @@ const handleSearch = async (query) => {
     key={book.id} 
     book={book} 
     onBookUpdate={handleBookUpdate}
+    user={user}
   />
 ))}
           </div>
@@ -229,6 +230,8 @@ const handleSearch = async (query) => {
         <BookDetailModal 
             book={searchResultBook}
             onClose={() => setSearchResultBook(null)}
+            user={user}
+            onBookUpdate={setSearchResultBook}
         />
       )}
     </div>
