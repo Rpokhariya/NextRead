@@ -147,39 +147,55 @@ def get_recommendations(
 
 
 
+
 @app.get("/books/{book_id}", response_model=schemas.Book)
-def read_book_details(book_id: int, db: Session = Depends(get_db)):
+def read_book_details(
+    book_id: int, 
+    db: Session = Depends(get_db),
+    current_user: models.User | None = Depends(auth.get_optional_current_user)
+):
     """
-    This endpoint gets the details for a single book.
-    If the book's description is missing, it generates a new one
-    using an AI model and saves ONLY successful results.
+    Gets details for a single book, including the user's rating if logged in.
+    If the book's description is missing, it generates a new one using an AI model.
     """
     db_book = crud.get_book_by_id(db, book_id=book_id)
     if not db_book:
         raise HTTPException(status_code=404, detail="Book not found")
 
-    # We only need to check for the initial placeholder now.
+    # --- Attach the user's rating if they are logged in ---
+    user_rating_value = None
+    if current_user:
+        user_rating_obj = db.query(models.Rating).filter(
+            models.Rating.book_id == book_id,
+            models.Rating.user_id == current_user.id
+        ).first()
+        if user_rating_obj:
+            user_rating_value = user_rating_obj.rating
+            
+    db_book.user_rating = user_rating_value
+
     needs_summary = db_book.description == "No description available."
 
     if needs_summary:
         print(f"Generating new summary for '{db_book.title}'...")
         new_description = ai.generate_book_summary(title=db_book.title, author=db_book.author)
         
+        # Check if the AI call was successful
         is_successful_summary = new_description and new_description not in [
             "AI model is not available.",
             "Could not generate a summary at this time."
         ]
 
         if is_successful_summary:
-            # If the AI call was successful, update the database.
-            # The crud function will return the updated object.
+            # If successful, update the book in the database
             db_book = crud.update_book_description(db, book_id=book_id, description=new_description)
+            # Re-attach the user rating to the newly updated book object
+            db_book.user_rating = user_rating_value
         else:
+            # If not successful, we need to show the error message without saving it.
             # 1. Detach the book object from the database session.
             db.expunge(db_book)
-            
-            # 2. Now, we can safely change the description for this one response.
-            # This change will NOT be saved to the database.
+            # 2. Now, safely change the description for this one response without saving.
             db_book.description = new_description
 
     return db_book
@@ -187,6 +203,50 @@ def read_book_details(book_id: int, db: Session = Depends(get_db)):
 
 
 # from sqlalchemy.exc import IntegrityError
+
+# @app.post("/books/{book_id}/rate", response_model=schemas.Book)
+# def rate_book(
+#     book_id: int,
+#     rating: schemas.RatingCreate,
+#     current_user: models.User = Depends(auth.get_current_user),
+#     db: Session = Depends(get_db)
+# ):
+#     """
+#     Allows a logged-in user to rate a book once (1–5).
+#     Stores rating in the ratings table.
+#     Updates book.average_rating and ratings_count incrementally.
+#     """
+
+#     db_book = crud.get_book_by_id(db, book_id=book_id)
+#     if not db_book:
+#         raise HTTPException(status_code=404, detail="Book not found")
+
+#     # Insert into ratings table
+#     new_rating = models.Rating(
+#         book_id=book_id,
+#         user_id=current_user.id,
+#         rating=rating.rating
+#     )
+#     db.add(new_rating)
+
+#     try:
+#         db.commit()
+#     except IntegrityError:
+#         db.rollback()
+#         raise HTTPException(status_code=400, detail="You have already rated this book")
+
+#     # ✅ Incrementally update book rating stats
+#     total_rating = (db_book.average_rating or 0) * (db_book.ratings_count or 0)
+#     total_rating += rating.rating
+#     db_book.ratings_count = (db_book.ratings_count or 0) + 1
+#     db_book.average_rating = round(total_rating / db_book.ratings_count, 1)
+
+#     db.commit()
+#     db.refresh(db_book)
+#     return db_book
+
+# # app/main.py
+
 
 @app.post("/books/{book_id}/rate", response_model=schemas.Book)
 def rate_book(
@@ -196,16 +256,15 @@ def rate_book(
     db: Session = Depends(get_db)
 ):
     """
-    Allows a logged-in user to rate a book once (1–5).
-    Stores rating in the ratings table.
-    Updates book.average_rating and ratings_count incrementally.
+    Allows a logged-in user to rate a book ONCE (1–5).
+    Raises an error if the user has already rated this book.
+    Incrementally updates the book's average rating and count.
     """
-
     db_book = crud.get_book_by_id(db, book_id=book_id)
     if not db_book:
         raise HTTPException(status_code=404, detail="Book not found")
 
-    # Insert into ratings table
+    # Create a new rating object
     new_rating = models.Rating(
         book_id=book_id,
         user_id=current_user.id,
@@ -214,19 +273,32 @@ def rate_book(
     db.add(new_rating)
 
     try:
+        # Attempt to save the new rating to the database
         db.commit()
+        db.refresh(new_rating)
+        
+        # --- Incremental Update Logic (Runs only on success) ---
+        # Calculate the previous total score
+        total_rating_sum = (db_book.average_rating or 0) * (db_book.ratings_count or 0)
+        
+        # Add the new rating and increment the count
+        total_rating_sum += rating.rating
+        db_book.ratings_count = (db_book.ratings_count or 0) + 1
+        
+        # Calculate and update the new average
+        db_book.average_rating = round(total_rating_sum / db_book.ratings_count, 2)
+
+        db.commit() # Save the updated book stats
+        db.refresh(db_book)
+
     except IntegrityError:
-        db.rollback()
-        raise HTTPException(status_code=400, detail="You have already rated this book")
+        # This block runs if the UniqueConstraint ('_book_user_uc') fails
+        db.rollback() # Rollback the failed transaction
+        raise HTTPException(
+            status_code=400, 
+            detail="You have already rated this book."
+        )
 
-    # ✅ Incrementally update book rating stats
-    total_rating = (db_book.average_rating or 0) * (db_book.ratings_count or 0)
-    total_rating += rating.rating
-    db_book.ratings_count = (db_book.ratings_count or 0) + 1
-    db_book.average_rating = round(total_rating / db_book.ratings_count, 1)
-
-    db.commit()
-    db.refresh(db_book)
     return db_book
 
 

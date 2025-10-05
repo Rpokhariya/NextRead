@@ -12,6 +12,7 @@ class Book(BaseModel):
     cover_image_url: str | None = None
     average_rating: float | None = None
     ratings_count: int | None = None
+    user_rating: float | None = None
 
 
 # --- Goal Schema ---
