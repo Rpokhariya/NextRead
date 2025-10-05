@@ -8,6 +8,7 @@ import Header from '../components/Header';
 import SearchBar from '../components/SearchBar';
 import BookCard from '../components/BookCard';
 import BookDetailModal from '../components/BookDetailModal';
+import BookCarousel from '../components/BookCarousel';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -209,10 +210,14 @@ const renderBookGrid = (books) => (
           <>
             {recommendedBooks.length > 0 && (
               <div className="mb-12">
-                <h2 className="font-serif text-3xl font-bold text-navy mb-6">
+                <h2 className="font-serif text-3xl font-bold text-navy mb-2">
                   Recommended for You
                 </h2>
-                {renderBookGrid(recommendedBooks, )}
+                <BookCarousel 
+                  books={recommendedBooks} 
+                  user={user} 
+                  onBookUpdate={handleBookUpdate} 
+                />
               </div>
             )}
             {popularBooks.length > 0 && (
