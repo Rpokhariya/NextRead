@@ -1,4 +1,4 @@
-# Live demo: https://nextreadapp.netlify.app/
+# Live demo: https://nextread-java.netlify.app/
 
 ## NextRead
 
